@@ -1,0 +1,17 @@
+{
+    "name": "wpprogramator/wp-api-wrapper",
+    "description": "A wrapper around Wordpress remote_request() method, to make sending and receiving requests from Wordpress to external services easier",
+    "type": "library",
+    "license": "GPL",
+    "authors": [
+        {
+            "name": "Václav Greif",
+            "email": "vaclav@wp-programator.cz"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": { "WPProgramator\\": ["src/"] }
+    }
+}
