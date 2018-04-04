@@ -6,7 +6,7 @@ class Api {
 	 * API URL
 	 * @var string
 	 */
-	protected $api_url = '';
+	protected $apiUrl = '';
 
 	/**
 	 * Request args
@@ -36,7 +36,7 @@ class Api {
 	 * JSON encode body in the request
 	 * @var bool
 	 */
-	protected $json_encode_body = false;
+	protected $jsonEncodeBody = false;
 
 
 	/**
@@ -50,15 +50,15 @@ class Api {
 	 * Set the API URL
 	 * @param $url
 	 */
-	function set_api_url (string $url) {
-		$this->api_url = $url;
+	function setApiUrl (string $url) {
+		$this->apiUrl = $url;
 	}
 
 	/**
 	 * Set the default args
 	 * @param array $args
 	 */
-	function set_args(array $args) {
+	function setArgs(array $args) {
 		$this->args = $args;
 	}
 
@@ -66,16 +66,16 @@ class Api {
 	 * Add args
 	 * @param array $args
 	 */
-	function add_args(array $args) {
-		$args = $this->array_merge_recursive_distinct($this->args, $args);
-		$this->set_args($args);
+	function addArgs(array $args) {
+		$args = $this->arrayMergeRecursiveDistinct($this->args, $args);
+		$this->setArgs($args);
 	}
 
 	/**
 	 * Set the request method
 	 * @param string $method
 	 */
-	function set_method (string $method) {
+	function setMethod (string $method) {
 		$this->method = $method;
 	}
 
@@ -83,7 +83,7 @@ class Api {
 	 * Set the request method
 	 * @param string $endpoint
 	 */
-	function set_endpoint (string $endpoint) {
+	function setEndpoint (string $endpoint) {
 		$this->endpoint = $endpoint;
 	}
 
@@ -92,7 +92,7 @@ class Api {
 	 * @return array|bool|mixed|object|\WP_Error
 	 */
 	function _get() {
-		$this->set_method('get');
+		$this->setMethod('GET');
 		return $this->_call();
 	}
 
@@ -101,7 +101,7 @@ class Api {
 	 * @return array|bool|mixed|object|\WP_Error
 	 */
 	function _post() {
-		$this->set_method('post');
+		$this->setMethod('POST');
 		return $this->_call();
 	}
 
@@ -110,7 +110,7 @@ class Api {
 	 * @return array|bool|mixed|object|\WP_Error
 	 */
 	function _delete() {
-		$this->set_method('delete');
+		$this->setMethod('DELETE');
 		return $this->_call();
 	}
 
@@ -119,7 +119,7 @@ class Api {
 	 * @return array|bool|mixed|object|\WP_Error
 	 */
 	function _put() {
-		$this->set_method('put');
+		$this->setMethod('PUT');
 		return $this->_call();
 	}
 
@@ -134,12 +134,12 @@ class Api {
 		$this->args['method'] = $this->method;
 
 		// JSON Encode the body if asked to
-		if (isset($this->args['body']) && is_array($this->args['body']) && $this->json_encode_body) {
-			$args['body'] = json_encode($this->args['body']);
+		if (isset($this->args['body']) && is_array($this->args['body']) && $this->jsonEncodeBody) {
+			$this->args['body'] = json_encode($this->args['body']);
 		}
 
 		// Set the endpoint
-		$url = $this->get_request_url();
+		$url = $this->getRequestUrl();
 
 		$response = false;
 
@@ -148,21 +148,20 @@ class Api {
 
 		if (!$this->response)
 			return new \WP_Error(400,'Error when sending request', $response);
-
 		// Return error or success response
-		if (!$this->response_is_success()) {
-			return $this->prepare_response_error();
+		if (!$this->responseIsSuccess()) {
+			return $this->prepareResponseError();
 		}
 
-		return $this->prepare_response_success();
+		return $this->prepareResponseSuccess();
 	}
 
 	/**
 	 * Get the request URL
 	 * @return string
 	 */
-	function get_request_url() {
-		return $this->api_url. $this->endpoint;
+	function getRequestUrl() {
+		return $this->apiUrl. $this->endpoint;
 	}
 
 	/**
@@ -170,7 +169,7 @@ class Api {
 	 * To be overridden by sub-classes
 	 * @return bool
 	 */
-	function response_is_success() {
+	function responseIsSuccess() {
 		$response_code = wp_remote_retrieve_response_code($this->response);
 		return  $response_code >= 200 && $response_code < 300;
 	}
@@ -180,9 +179,9 @@ class Api {
 	 * To be overridden by sub-classes
 	 * @return \WP_Error
 	 */
-	function prepare_response_error() {
+	function prepareResponseError() {
 		$errors = [];
-		$body = $this->get_response_body();
+		$body = $this->getResponseBody();
 		foreach ($body->error as $error) {
 			$errors[] = $error;
 		}
@@ -196,15 +195,15 @@ class Api {
 	 * To be overridden by sub-classes
 	 * @return string
 	 */
-	function prepare_response_success() {
-		return $this->get_response_body();
+	function prepareResponseSuccess() {
+		return $this->getResponseBody();
 	}
 
 	/**
 	 * Get the response body
 	 * @return string
 	 */
-	function get_response_body() {
+	function getResponseBody() {
 		return wp_remote_retrieve_body($this->response);
 	}
 
@@ -220,12 +219,12 @@ class Api {
 	 *
 	 * @return array
 	 */
-	protected function array_merge_recursive_distinct(array &$array1, array &$array2)
+	protected function arrayMergeRecursiveDistinct(array &$array1, array &$array2)
 	{
 		$merged = $array1;
 		foreach ($array2 as $key => &$value) {
 			if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
-				$merged[$key] = $this->array_merge_recursive_distinct($merged[$key], $value);
+				$merged[$key] = $this->arrayMergeRecursiveDistinct($merged[$key], $value);
 			} else {
 				$merged[$key] = $value;
 			}

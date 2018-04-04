@@ -13,11 +13,11 @@ class TestMethod extends Api {
 	 */
 	function __construct() {
 		// Set the endpoing
-		$this->set_endpoint('https://myapiurl.com');
+		$this->setApiUrl('https://myapiurl.com');
 
 		// Set the API args
 
-		$this->set_args(array(
+		$this->setArgs(array(
 			'timeout' => 45,
 			'redirection' => 5,
 			'httpversion' => '1.0',
@@ -40,8 +40,8 @@ class TestMethod extends Api {
 			'another_param' => 'another_value'
 		];
 
-		$this->add_args($args);
-		$this->set_endpoint('some-endpoint');
+		$this->addArgs($args);
+		$this->setEndpoint('some-endpoint');
 
 		return $this->_get();
 	}
