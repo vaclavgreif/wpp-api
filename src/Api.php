@@ -124,6 +124,15 @@ class Api {
 	}
 
 	/**
+	 * Call the API with PATCH Method
+	 * @return array|bool|mixed|object|\WP_Error
+	 */
+	function _patch() {
+		$this->setMethod('PATCH');
+		return $this->_call();
+	}
+
+	/**
 	 * Call the API
 	 *
 	 * @return array|mixed|object|\WP_Error
